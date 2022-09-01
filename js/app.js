@@ -1,16 +1,16 @@
-const loadPhones = async (searchText) => {
+const loadPhones = async (searchText, dataLimit) => {
     const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`
     const res = await fetch(url);
     const data = await res.json();
-    displayPhones(data.data);
+    displayPhones(data.data, dataLimit);
 }
 
-const displayPhones = phones => {
+const displayPhones = (phones, dataLimit) => {
     const phonesContainer = document.getElementById('phones-container');
     phonesContainer.textContent = '';
     // display 20 phones only
     const showAll = document.getElementById('show-all');
-    if (phones.length > 10) {
+    if (dataLimit && phones.length > 10) {
         phones = phones.slice(0, 10);
         showAll.classList.remove('d-none');
     }
@@ -48,14 +48,17 @@ const displayPhones = phones => {
     toggleSpinner(false);
 
 }
+const processSearch = (dataLimit) => {
+    toggleSpinner(true);
+    const searchField = document.getElementById('search-field');
+    const searchText = searchField.value;
+    loadPhones(searchText, dataLimit);
+}
 
 // handle search button click
 document.getElementById('btn-search').addEventListener('click', function () {
     // start loader
-    toggleSpinner(true);
-    const searchField = document.getElementById('search-field');
-    const searchText = searchField.value;
-    loadPhones(searchText);
+    processSearch(10);
 
 })
 
@@ -69,5 +72,9 @@ const toggleSpinner = isLoading => {
     }
 }
 
+// not the best way to load show all
+document.getElementById('btn-show-all').addEventListener('click', function () {
+    processSearch();
+})
 
 // loadPhones();
